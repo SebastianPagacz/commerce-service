@@ -45,7 +45,7 @@ public class Product
         Name = newName;
         Update();
     }
-    public void SetDescription(string newDescription)
+    public void SetDescription(string? newDescription)
     {
         Description = newDescription;
         Update();
@@ -68,15 +68,15 @@ public class Product
     }
     public void AddStock(int toAdd)
     {
-        if (toAdd < 0)
-            throw new DomainException("Addition stock can't be negative."); // Want to give information if the operation didn't happen
+        if (toAdd <= 0)
+            throw new DomainException("Additional stock can't be negative."); // Want to give information if the operation didn't happen
         
         Stock += toAdd;
         Update();
     }
     public void SubtractStock(int toSubtract)
     {
-        if (toSubtract > Stock || toSubtract < 0)
+        if (toSubtract > Stock || toSubtract <= 0)
             throw new DomainException("Subtracted stock can't be negative or exceed overall stock.");
 
     }
@@ -92,7 +92,7 @@ public class Product
     // Helpers
     private static bool ValidateName(string name)
     {
-        if (string.IsNullOrWhiteSpace(name) || name.Length > 256)
+        if (string.IsNullOrWhiteSpace(name) || name.Length > 255)
             return false;
 
         return true;

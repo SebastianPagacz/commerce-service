@@ -19,7 +19,7 @@ public class Category
 
     public static Category Create(string name)
     {
-        if (string.IsNullOrWhiteSpace(name) || name.Length > 256)
+        if (string.IsNullOrWhiteSpace(name) || name.Length > 255)
             throw new DomainException("Name can't be empty or exceed 255 characters.");
 
         return new Category(name);
@@ -27,7 +27,7 @@ public class Category
 
     public void SetName(string name)
     {
-        if (string.IsNullOrWhiteSpace(name) || name.Length > 256)
+        if (string.IsNullOrWhiteSpace(name) || name.Length > 255)
             throw new DomainException("Name can't be empty or exceed 255 characters.");
 
         Name = name;
@@ -36,7 +36,7 @@ public class Category
     public void Delete()
     {
         if (IsDeleted)
-            throw new Exception();
+            throw new DomainException("Category is already deleted.");
 
         IsDeleted = true;
         UpdatedAt = DateTimeOffset.UtcNow; 
