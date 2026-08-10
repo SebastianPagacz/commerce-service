@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using ProductService.Application.Services.QueryServices;
 using ProductService.Domain.Abstractions;
 using ProductService.Domain.Models;
 using ProductService.Infrastructure.Context;
+using ProductService.Infrastructure.QueryServices;
 using ProductService.Infrastructure.Repository;
 
 namespace ProductService.Infrastructure;
@@ -14,6 +16,9 @@ public static class InfrastructureDependencyInjection
         services.AddScoped<IRepository<Product>, ProductRepository>();
         services.AddScoped<IRepository<Category>, CategoryRepository>();
         
+        services.AddScoped<IProductQueryService, ProductQueryService>();
+        services.AddScoped<ICategoryQueryService, CategoryQueryService>();
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
