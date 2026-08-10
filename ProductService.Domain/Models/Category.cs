@@ -9,8 +9,7 @@ public class Category
     public bool IsDeleted { get; private set; } = false;
     public DateTimeOffset CreatedAt { get; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? UpdatedAt { get; private set; }
-    
-    // COnstructors
+
     private Category() { }
     private Category(string name)
     {

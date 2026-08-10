@@ -90,6 +90,20 @@ public class ProductMethodsUnitTests
     }
 
     [Theory]
+    [InlineData(1)]
+    [InlineData(10)]
+    [InlineData(100)]
+    public void ProductAddStock_Sets_CorrectStockValue(int stock)
+    {
+        // Arrange
+        var product = Product.Create("Test", null, 12.99m, 20);
+        // Act
+        product.AddStock(stock);
+        // Assert
+        Assert.Equal(20 + stock, product.Stock);
+    }
+
+    [Theory]
     [InlineData(-1)]
     [InlineData(0)]
     [InlineData(-100)]
@@ -101,6 +115,20 @@ public class ProductMethodsUnitTests
         var action = Assert.Throws<DomainException>(() => product.SubtractStock(stock));
         // Assert
         Assert.Equal(_invalidSubStockMessage, action.Message);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(10)]
+    [InlineData(20)]
+    public void ProductSubtractStock_Sets_CorrectStockValue(int stock)
+    {
+        // Arrange
+        var product = Product.Create("Test", null, 12.99m, 20);
+        // Act
+        product.SubtractStock(stock);
+        // Assert
+        Assert.Equal(20 - stock, product.Stock);
     }
 
     [Fact]

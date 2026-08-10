@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using ProductService.Domain.Exceptions;
 
 namespace ProductService.Domain.Models;
@@ -12,6 +13,8 @@ public class Product
     public bool IsDeleted { get; private set; } = false;
     public DateTimeOffset CreatedAt { get; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? UpdatedAt { get; private set; }
+    public IReadOnlyCollection<ProductCategory> Categories => _categories.AsReadOnly();
+    private List<ProductCategory> _categories = new();
 
     // Constructors
     private Product() { }
@@ -78,7 +81,9 @@ public class Product
     {
         if (toSubtract > Stock || toSubtract <= 0)
             throw new DomainException("Subtracted stock can't be negative or exceed overall stock.");
-
+        
+        Stock -= toSubtract;
+        Update();
     }
     public void Delete()
     {
@@ -100,5 +105,17 @@ public class Product
     private void Update()
     {
         UpdatedAt = DateTimeOffset.UtcNow;
+    }
+
+    // Relationships
+    public void AssignCategory(Guid categoryId)
+    {
+        if (_categories.Any(pc => pc.CategoryId == categoryId))
+            throw new DomainException("Product already has this category assigned.");
+
+        if (IsDeleted)
+            throw new DomainException("Can't assign category to deleted product.");
+
+        _categories.Add(ProductCategory.Create(Id, categoryId));
     }
 }
