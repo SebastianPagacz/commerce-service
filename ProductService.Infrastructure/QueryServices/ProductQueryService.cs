@@ -1,6 +1,4 @@
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using ProductService.Application.Common;
 using ProductService.Application.Products;
 using ProductService.Application.Services.QueryServices;
@@ -27,36 +25,29 @@ public class ProductQueryService(AppDbContext context) : IProductQueryService
         int pageNumber,
         CancellationToken cancellationToken = default)
     {
-        var query = context.Products.AsNoTracking();
+        IQueryable<Product> query = context.Products.AsNoTracking();
 
-        Expression<Func<Product, object?>> sortKey = sortColumn?.ToLower().Trim() switch
+        bool isDesc = sortOrder.ToLower().Trim() == "desc";
+
+        query = sortColumn?.ToLower().Trim() switch
         {
-            "name" => i => i.Name,
-            "price" => i => i.Price,
-            "stock" => i => i.Stock,
-            "createdat" => i => i.CreatedAt,
-            _ => i => i.Id
+            "name" => isDesc ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
+            "price" => isDesc ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price),
+            "stock" => isDesc ? query.OrderByDescending(p => p.Stock) : query.OrderBy(p => p.Stock),
+            "createdat" => isDesc ? query.OrderByDescending(p => p.CreatedAt) : query.OrderBy(p => p.CreatedAt),
+            _ => isDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id)
         };
-
-        if(sortOrder.ToLower() == "desc")
-        {
-            query = query.OrderByDescending(sortKey);
-        }
-        else
-        {
-            query = query.OrderBy(sortKey);
-        }
             
         query = query.Skip(pageSize * (pageNumber - 1))
             .Take(pageSize);
 
-        var final = await query
+        var result = await query
             .Where(p => !p.IsDeleted)
             .Include(p => p.Categories)
             .Select(p => new ProductDTO(p.Name, p.Description, p.Price, p.Stock))
             .ToListAsync(cancellationToken);
 
-        return PagedResult<List<ProductDTO>>.Create(final, pageSize, pageNumber, final.Count());
+        return PagedResult<List<ProductDTO>>.Create(result, pageSize, pageNumber, result.Count());
     }
 
     public async Task<ProductDTO> GetExistingProductAsync(Guid id, CancellationToken cancellationToken = default)

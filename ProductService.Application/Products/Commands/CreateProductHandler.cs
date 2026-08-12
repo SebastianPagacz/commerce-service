@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using ProductService.Application.Common;
 using ProductService.Domain.Abstractions;
@@ -5,10 +6,18 @@ using ProductService.Domain.Models;
 
 namespace ProductService.Application.Products.Commands;
 
-public class CreateProductHandler(IRepository<Product> repo, IUnitOfWork uow) : IRequestHandler<CreateProductCommand, Result<Guid>>
+public class CreateProductHandler(
+    IRepository<Product> repo, 
+    IUnitOfWork uow,
+    IValidator<CreateProductCommand> validator) : IRequestHandler<CreateProductCommand, Result<Guid>>
 {
     public async Task<Result<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
+        var validationResult = await validator.ValidateAsync(request);
+
+        if (!validationResult.IsValid)
+            return Result<Guid>.Fail(validationResult.Errors.ToString());
+
         var newProduct = Product.Create(
             request.Name,
             request.Description, 

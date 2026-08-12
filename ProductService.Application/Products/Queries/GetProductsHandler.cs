@@ -4,12 +4,21 @@ using ProductService.Application.Services.QueryServices;
 
 namespace ProductService.Application.Products.Queries;
 
-public class GetProductsHandler(IProductQueryService query) : IRequestHandler<GetProductsCommand, Result<List<ProductDTO>>>
+public class GetProductsHandler(IProductQueryService query) : IRequestHandler<GetProductsCommand, PagedResult<List<ProductDTO>>>
 {
-    public async Task<Result<List<ProductDTO>>> Handle(GetProductsCommand request, CancellationToken cancellationToken)
+    public async Task<PagedResult<List<ProductDTO>>> Handle(GetProductsCommand request, CancellationToken cancellationToken)
     {
-        var products = await query.GetAllExistingProductsAsync(cancellationToken);
+        var products = await query.GetAllExistingProductsAsync(
+            request.SortOrder,
+            request.SortColumn,
+            request.PageSize,
+            request.PageNumber,
+            cancellationToken);
 
-        return Result<List<ProductDTO>>.Success(products);
+        return PagedResult<List<ProductDTO>>.Create(
+            products.Values, 
+            products.PageSize, 
+            products.PageNumber, 
+            products.TotalCount);
     }
 }

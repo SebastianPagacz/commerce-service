@@ -20,6 +20,15 @@ public record PagedResult<T> where T : IEnumerable
         TotalCount = totalCount;
     }
 
+    /// <summary>
+    /// Created a new PagedResult<out T> record with its parameters such as pageSize, pageNumber and totalCount
+    /// </summary>
+    /// <param name="values"></param>
+    /// <param name="pageSize"></param>
+    /// <param name="pageNumber"></param>
+    /// <param name="totalCount"></param>
+    /// <returns>New PagedResult<out T> containing a List<T> of elements></returns>
+    /// <exception cref="Exception"></exception>
     public static PagedResult<T> Create(T values, int pageSize, int pageNumber, int totalCount)
     {
         if (pageSize <= 0 || pageNumber <= 0)
