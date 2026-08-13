@@ -4,9 +4,9 @@ using ProductService.Application.Services.QueryServices;
 
 namespace ProductService.Application.Products.Queries;
 
-public record GetProductByIdHandler(IProductQueryService query) : IRequestHandler<GetProductByIdCommand, Result<ProductDTO>>
+public record GetProductByIdHandler(IProductQueryService query) : IRequestHandler<GetProductByIdQuery, Result<ProductDTO>>
 {
-    public async Task<Result<ProductDTO>> Handle(GetProductByIdCommand request, CancellationToken cancellationToken)
+    public async Task<Result<ProductDTO>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
         var exisitingProduct = await query.GetExistingProductAsync(request.Id, cancellationToken);
 

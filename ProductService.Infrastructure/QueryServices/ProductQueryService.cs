@@ -25,7 +25,7 @@ public class ProductQueryService(AppDbContext context) : IProductQueryService
         int pageNumber,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<Product> query = context.Products.AsNoTracking();
+        IQueryable<Product> query = context.Products.AsNoTracking().Where(p => !p.IsDeleted);
 
         bool isDesc = sortOrder.ToLower().Trim() == "desc";
 
@@ -38,11 +38,11 @@ public class ProductQueryService(AppDbContext context) : IProductQueryService
             _ => isDesc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id)
         };
             
-        query = query.Skip(pageSize * (pageNumber - 1))
+        query = query
+            .Skip(pageSize * (pageNumber - 1))
             .Take(pageSize);
 
         var result = await query
-            .Where(p => !p.IsDeleted)
             .Include(p => p.Categories)
             .Select(p => new ProductDTO(p.Name, p.Description, p.Price, p.Stock))
             .ToListAsync(cancellationToken);

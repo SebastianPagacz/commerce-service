@@ -3,7 +3,7 @@ using ProductService.Application.Common;
 
 namespace ProductService.Application.Products.Queries;
 
-public record GetProductsCommand(
+public record GetProductsQuery(
         string SortOrder,
         string? SortColumn,
         int PageSize,
