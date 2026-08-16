@@ -13,10 +13,7 @@ public class CreateProductHandler(
 {
     public async Task<Result<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
-
-        if (!validationResult.IsValid)
-            return Result<Guid>.Fail(validationResult.Errors.ToString());
+        await validator.ValidateAndThrowAsync(request);
 
         var newProduct = Product.Create(
             request.Name,

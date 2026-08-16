@@ -28,7 +28,6 @@ public class UpdateProductHandler(
         if (request.Stock is not null)
             existingProduct.SetStock((int)request.Stock);
 
-        repository.Add(existingProduct);
         await uow.CommitAsync(cancellationToken);
 
         return Result<Guid>.Success(existingProduct.Id);
