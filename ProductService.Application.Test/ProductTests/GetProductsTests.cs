@@ -35,5 +35,39 @@ public class GetProductsTests
         Assert.Empty(result.Values);
         Assert.Equal(10, result.PageSize);
         Assert.Equal(1, result.PageNumber);
+        _query.Verify(q => q.GetAllExistingProductsAsync("desc", "name", 10, 1, CancellationToken.None), Times.Once());
+    }
+
+    [Fact]
+    public async Task GetProductById_Returns_CorrectSuccessfulResult()
+    {
+        // Arrange
+        Guid guid = new();
+        var query = new GetProductByIdQuery(guid);
+        _query.Setup(q => q.GetExistingProductAsync(guid, CancellationToken.None))
+            .ReturnsAsync(new ProductDTO("Test", null, 12.99m, 10));
+        // Act
+        var result = await _idHandler.Handle(query, CancellationToken.None);
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal("Test", result.Value.Name);
+        Assert.Null(result.Value.Description);
+        Assert.Equal(12.99m, result.Value.Price);
+        Assert.Equal(10, result.Value.Stock);
+        _query.Verify(q => q.GetExistingProductAsync(guid, CancellationToken.None), Times.Once());
+    }
+
+    [Fact]
+    public async Task GetProductbyId_Returns_CorrectFailedResult()
+    {
+        // Arrange
+        Guid guid = new();
+        var query = new GetProductByIdQuery(guid);
+        // Act
+        var result = await _idHandler.Handle(query, CancellationToken.None);
+        // Assert
+        Assert.True(result.IsFail);
+        Assert.Equal("Product was not found", result.Message);
+        _query.Verify(q => q.GetExistingProductAsync(guid, CancellationToken.None), Times.Once());
     }
 }
