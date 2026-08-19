@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ProductService.Application.Services.QueryServices;
 using ProductService.Domain.Abstractions;
+using ProductService.Domain.Exceptions;
 using ProductService.Domain.Models;
 using ProductService.Infrastructure.Context;
 using ProductService.Infrastructure.QueryServices;
@@ -26,6 +28,9 @@ public static class InfrastructureDependencyInjection
 
     public static IServiceCollection RegisterDbContext(this IServiceCollection services, string connectionString)
     {
+        if (connectionString == "emptyConnection" || string.IsNullOrWhiteSpace(connectionString))
+            throw new InfrastructureException("Database connection error.");
+
         services.AddDbContext<AppDbContext>(options => 
             options.UseSqlServer(connectionString));
 

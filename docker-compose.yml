@@ -1,0 +1,27 @@
+services:
+  productservice:
+    build: 
+      context: .
+      dockerfile: ProductService.Api/dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DbConnection=${DB_CONNECTION}
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+     - "1433:1433"
+    environment:
+     - ACCEPT_EULA=Y
+     - MSSQL_SA_PASSWORD=${DB_PSSWD}
+     - MSSQL_DB=${DB_DATABASE}
+     - MSSQL_PID=Developer
+    volumes:
+     - sqlserverdata:/var/opt/mssql
+
+volumes:
+  sqlserverdata:
