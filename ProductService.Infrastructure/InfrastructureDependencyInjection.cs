@@ -28,16 +28,8 @@ public static class InfrastructureDependencyInjection
 
     public static IServiceCollection RegisterDbContext(this IServiceCollection services, string connectionString)
     {
-        // if (connectionString == "emptyConnection" || string.IsNullOrWhiteSpace(connectionString))
-        // {
-        //     services.AddDbContext<AppDbContext>(options => 
-        //         options.UseInMemoryDatabase("TestDb"));
-        // }
-        //else
-        //{
-            services.AddDbContext<AppDbContext>(options => 
-                options.UseSqlServer(connectionString));
-        //}
+        services.AddDbContext<AppDbContext>(options =>     
+            options.UseNpgsql(connectionString));
 
         return services;
     }

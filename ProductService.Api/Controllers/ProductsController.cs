@@ -14,7 +14,7 @@ public class ProductsController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(request, cancellationToken);
 
-        return CreatedAtAction("GetById", result.Value);
+        return CreatedAtAction("GetById", new {id = result.Value}, result.Value);
     }
 
     [HttpGet("{id}")]
@@ -29,7 +29,7 @@ public class ProductsController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get(GetProductsQuery request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Get([FromQuery] GetProductsQuery request, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(request, cancellationToken);
 

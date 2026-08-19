@@ -9,19 +9,18 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DbConnection=${DB_CONNECTION}
     depends_on:
-      - sqlserver
+      - postgredb 
 
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+  postgredb:
+    image: postgres:15-alpine
     ports:
-     - "1433:1433"
+     - "5432:5432"
     environment:
-     - ACCEPT_EULA=Y
-     - MSSQL_SA_PASSWORD=${DB_PSSWD}
-     - MSSQL_DB=${DB_DATABASE}
-     - MSSQL_PID=Developer
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_DB=${PG_DATABASE_NAME}
     volumes:
-     - sqlserverdata:/var/opt/mssql
+      - pspgdata:/var/lib/postgresql/data
 
 volumes:
-  sqlserverdata:
+  pspgdata:
