@@ -10,15 +10,8 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
         builder.HasKey(p => p.Id);
 
-        builder.Metadata.FindNavigation(nameof(Product.Categories))!
-            .SetPropertyAccessMode(PropertyAccessMode.Field);
-
         builder
             .HasMany(p => p.Categories)
-            .WithOne()
-            .HasForeignKey(pc => pc.ProductId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
-
+            .WithMany(c => c.Products);
     }
 }

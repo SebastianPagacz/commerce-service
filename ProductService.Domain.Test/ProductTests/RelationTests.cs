@@ -13,7 +13,7 @@ public class RelationTests
         var category = Category.Create("Test Cat");
         // Act
         Assert.Empty(product.Categories);
-        product.AssignCategory(category.Id);
+        product.AssignCategory(category);
         // Assert
         Assert.NotEmpty(product.Categories);
     }
@@ -26,8 +26,8 @@ public class RelationTests
         var category = Category.Create("Test Cat");
         // Act
         Assert.Empty(product.Categories);
-        product.AssignCategory(category.Id);
-        var action = Assert.Throws<DomainException>(() => product.AssignCategory(category.Id));
+        product.AssignCategory(category);
+        var action = Assert.Throws<DomainException>(() => product.AssignCategory(category));
         // Assert
         Assert.Equal("Product already has this category assigned.", action.Message);
     }
@@ -41,7 +41,7 @@ public class RelationTests
         // Act
         Assert.Empty(product.Categories);
         product.Delete();
-        var action = Assert.Throws<DomainException>(() => product.AssignCategory(category.Id));
+        var action = Assert.Throws<DomainException>(() => product.AssignCategory(category));
         // Assert
         Assert.Equal("Can't assign category to deleted product.", action.Message);
     }

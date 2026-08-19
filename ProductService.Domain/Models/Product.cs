@@ -13,8 +13,9 @@ public class Product
     public bool IsDeleted { get; private set; } = false;
     public DateTimeOffset CreatedAt { get; } = DateTimeOffset.UtcNow;
     public DateTimeOffset? UpdatedAt { get; private set; }
-    public IReadOnlyCollection<ProductCategory> Categories => _categories.AsReadOnly();
-    private List<ProductCategory> _categories = new();
+    public IReadOnlyCollection<Category> Categories => _categories.AsReadOnly();
+    private readonly List<Category> _categories = new();
+    
 
     // Constructors
     private Product() { }
@@ -108,14 +109,14 @@ public class Product
     }
 
     // Relationships
-    public void AssignCategory(Guid categoryId)
+    public void AssignCategory(Category category)
     {
-        if (_categories.Any(pc => pc.CategoryId == categoryId))
+        if (_categories.Any(p => p.Id == category.Id))
             throw new DomainException("Product already has this category assigned.");
 
         if (IsDeleted)
             throw new DomainException("Can't assign category to deleted product.");
 
-        _categories.Add(ProductCategory.Create(Id, categoryId));
+        _categories.Add(category);
     }
 }
