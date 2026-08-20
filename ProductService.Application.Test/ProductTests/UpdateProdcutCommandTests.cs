@@ -8,13 +8,15 @@ namespace ProductService.Application.Test.ProductTests;
 public class UpdateProdcutCommandTests
 {
     private readonly UpdateProductHandler _handler;
-    private readonly Mock<IRepository<Product>> _repository;
+    private readonly Mock<IRepository<Product>> _productRepo;
+    private readonly Mock<IRepository<Category>> _categoryRepo;
     private readonly Mock<IUnitOfWork> _uow;
     public UpdateProdcutCommandTests()
     {
-        _repository = new();
+        _productRepo = new();
+        _categoryRepo = new();
         _uow = new();
-        _handler = new(_repository.Object, _uow.Object);
+        _handler = new(_productRepo.Object, _categoryRepo.Object, _uow.Object);
     }
 
     [Fact]
@@ -23,13 +25,13 @@ public class UpdateProdcutCommandTests
         // Arrange
         var guid = new Guid();
         var product = Product.Create("Test", null, 12.99m, 12);
-        var command = new UpdateProductCommand(guid, "Test2", "Test2", 10, 10);
+        var command = new UpdateProductCommand(guid, "Test2", "Test2", 10, 10, null);
         // Act
-        _repository.Setup(r => r.GetAsync(guid, CancellationToken.None)).ReturnsAsync(product);
+        _productRepo.Setup(r => r.GetAsync(guid, CancellationToken.None)).ReturnsAsync(product);
         var result = await _handler.Handle(command, CancellationToken.None);
         // Assert
         _uow.Verify(u => u.CommitAsync(CancellationToken.None), Times.Once());
-        _repository.Verify(r => r.GetAsync(guid, CancellationToken.None), Times.Once());
+        _productRepo.Verify(r => r.GetAsync(guid, CancellationToken.None), Times.Once());
         // Object assertion
         Assert.Equal("Test2", product.Name);
         Assert.Equal("Test2", product.Description);
@@ -44,12 +46,12 @@ public class UpdateProdcutCommandTests
     public async Task UpdateProductCommand_Returns_FailedResult()
     {
         // Arrange
-        var command = new UpdateProductCommand(new Guid(), "Test2", "Test2", 10, 10);
+        var command = new UpdateProductCommand(new Guid(), "Test2", "Test2", 10, 10, null);
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
         // Assert
         Assert.True(result.IsFail);
-        _repository.Verify(r => r.GetAsync(It.IsAny<Guid>(), CancellationToken.None), Times.Once);
+        _productRepo.Verify(r => r.GetAsync(It.IsAny<Guid>(), CancellationToken.None), Times.Once);
         _uow.Verify(u => u.CommitAsync(CancellationToken.None), Times.Never());
     }
 }

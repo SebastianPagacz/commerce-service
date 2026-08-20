@@ -57,4 +57,6 @@ public class ProductsController(IMediator mediator) : ControllerBase
 
         return NotFound(result.Message);
     }
+
+    
 }

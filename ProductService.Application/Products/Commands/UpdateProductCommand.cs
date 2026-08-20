@@ -8,7 +8,8 @@ public record UpdateProductCommand(
     string? Name, 
     string? Description, 
     decimal? Price, 
-    int? Stock) : IRequest<Result<Guid>>
+    int? Stock,
+    Guid? CategoryId) : IRequest<Result<Guid>>
 {
     
 }

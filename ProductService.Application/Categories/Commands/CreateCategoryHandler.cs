@@ -7,12 +7,11 @@ using ProductService.Domain.Models;
 
 namespace ProductService.Application.Categories.Commands;
 
-public class CreateCategoryHandler(IRepository<Category> repository, IUnitOfWork uow, IValidator<Category> validator) : IRequestHandler<CreateCategoryCommand, Result<Guid>>
+public class CreateCategoryHandler(IRepository<Category> repository, IUnitOfWork uow) : IRequestHandler<CreateCategoryCommand, Result<Guid>>
 {
     public async Task<Result<Guid>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
         var newCategory = Category.Create(request.Name);
-        await validator.ValidateAndThrowAsync(newCategory);
 
         repository.Add(newCategory);
         await uow.CommitAsync(cancellationToken);

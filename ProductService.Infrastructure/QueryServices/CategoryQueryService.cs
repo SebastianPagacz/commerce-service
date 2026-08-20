@@ -10,7 +10,7 @@ namespace ProductService.Infrastructure.QueryServices;
 public class CategoryQueryService(AppDbContext context) : ICategoryQueryService
 {
     public async Task<PagedResult<List<CategoryDTO>>> GetAllExistingCategoriesAsync(
-        string sortOrder,
+        string? sortOrder,
         string? sortColumn,
         int pageSize,
         int pageNumber,
@@ -20,7 +20,10 @@ public class CategoryQueryService(AppDbContext context) : ICategoryQueryService
             .AsNoTracking()
             .Where(c => !c.IsDeleted);
 
-        bool isDesc = sortOrder.ToLower().Trim() == "desc";
+        bool isDesc = false;
+
+        if (sortOrder is not null)
+            isDesc = sortOrder.ToLower().Trim() == "desc";
 
         query = sortColumn?.ToLower().Trim() switch
         {
@@ -30,7 +33,7 @@ public class CategoryQueryService(AppDbContext context) : ICategoryQueryService
         };
 
         query = query
-            .Skip((pageSize -1) * pageNumber)
+            .Skip((pageNumber -1) * pageSize)
             .Take(pageSize);
             
         var result = await query
@@ -44,7 +47,7 @@ public class CategoryQueryService(AppDbContext context) : ICategoryQueryService
     {
         return await context.Categories
             .AsNoTracking()
-            .Where(c => c.Id == id && c.IsDeleted)
+            .Where(c => c.Id == id && !c.IsDeleted)
             .Select(c => new CategoryDTO(c.Id, c.Name))
             .FirstOrDefaultAsync(cancellationToken);
     }

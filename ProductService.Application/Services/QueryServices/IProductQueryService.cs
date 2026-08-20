@@ -7,7 +7,7 @@ public interface IProductQueryService
 {
     Task<ProductDTO> GetExistingProductAsync(Guid id, CancellationToken cancellationToken = default);
     Task<PagedResult<List<ProductDTO>>> GetAllExistingProductsAsync(
-        string sortOrder,
+        string? sortOrder,
         string? sortColumn,
         int pageSize,
         int pageNumber,

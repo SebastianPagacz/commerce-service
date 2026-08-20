@@ -8,7 +8,7 @@ public interface ICategoryQueryService
 {
     Task<CategoryDTO> GetExistingCategoryAsync(Guid id, CancellationToken cancellationToken = default);
     Task<PagedResult<List<CategoryDTO>>> GetAllExistingCategoriesAsync(
-        string sortOrder,
+        string? sortOrder,
         string? sortColumn,
         int pageSize,
         int pageNumber,

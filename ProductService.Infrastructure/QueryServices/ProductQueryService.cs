@@ -11,7 +11,7 @@ namespace ProductService.Infrastructure.QueryServices;
 public class ProductQueryService(AppDbContext context) : IProductQueryService
 {
     public async Task<PagedResult<List<ProductDTO>>> GetAllExistingProductsAsync(
-        string sortOrder,
+        string? sortOrder,
         string? sortColumn,
         int pageSize,
         int pageNumber,
@@ -19,7 +19,10 @@ public class ProductQueryService(AppDbContext context) : IProductQueryService
     {
         IQueryable<Product> query = context.Products.AsNoTracking().Where(p => !p.IsDeleted);
 
-        bool isDesc = sortOrder.ToLower().Trim() == "desc";
+        bool isDesc = false;
+
+        if (sortOrder is not null)
+            isDesc = sortOrder.ToLower().Trim() == "desc";
 
         query = sortColumn?.ToLower().Trim() switch
         {

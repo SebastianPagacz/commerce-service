@@ -15,7 +15,7 @@ public class CategoriesController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(request, cancellationToken);
 
         if (result.IsSuccess)
-            return CreatedAtAction("GetById", result.Value);
+            return CreatedAtAction("GetById", new {id = result.Value}, result.Value);
 
         return BadRequest();
     }
@@ -36,7 +36,7 @@ public class CategoriesController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(request, cancellationToken);
 
-        return Ok(result.Values);
+        return Ok(result);
     }
 
     [HttpPatch("{id}")]
