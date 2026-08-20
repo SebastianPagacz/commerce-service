@@ -1,4 +1,5 @@
 using Moq;
+using ProductService.Application.Categories;
 using ProductService.Application.Common;
 using ProductService.Application.Products;
 using ProductService.Application.Products.Queries;
@@ -45,7 +46,7 @@ public class GetProductsTests
         Guid guid = new();
         var query = new GetProductByIdQuery(guid);
         _query.Setup(q => q.GetExistingProductAsync(guid, CancellationToken.None))
-            .ReturnsAsync(new ProductDTO("Test", null, 12.99m, 10));
+            .ReturnsAsync(new ProductDTO(It.IsAny<Guid>(), "Test", null, 12.99m, 10, It.IsAny<List<CategoryDTO>>()));
         // Act
         var result = await _idHandler.Handle(query, CancellationToken.None);
         // Assert

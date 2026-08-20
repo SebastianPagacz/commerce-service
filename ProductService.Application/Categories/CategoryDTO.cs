@@ -1,6 +1,3 @@
 namespace ProductService.Application.Categories;
 
-public record CategoryDTO(Guid Id, string Name)
-{
-    
-}
+public record CategoryDTO(Guid Id, string Name);

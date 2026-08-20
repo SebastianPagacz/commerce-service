@@ -12,10 +12,7 @@ public class CreateCategoryHandler(IRepository<Category> repository, IUnitOfWork
     public async Task<Result<Guid>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
         var newCategory = Category.Create(request.Name);
-        var validationResult = await validator.ValidateAsync(newCategory);
-
-        if (!validationResult.IsValid)
-            return Result<Guid>.Fail("Failed to create new category.");
+        await validator.ValidateAndThrowAsync(newCategory);
 
         repository.Add(newCategory);
         await uow.CommitAsync(cancellationToken);

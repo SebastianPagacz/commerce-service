@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ProductService.Application.Categories;
 using ProductService.Application.Common;
 using ProductService.Application.Products;
 using ProductService.Application.Services.QueryServices;
@@ -9,15 +10,6 @@ namespace ProductService.Infrastructure.QueryServices;
 
 public class ProductQueryService(AppDbContext context) : IProductQueryService
 {
-    // public async Task<PagedResult<List<ProductDTO>>> GetExistingProductWithoutCategoriesAsync(CancellationToken cancellationToken = default)
-    // {
-    //     return await context.Products
-    //         .AsNoTracking()
-    //         .Where(p => !p.IsDeleted)
-    //         .Select(p => new ProductDTO(p.Name, p.Description, p.Price, p.Stock))
-    //         .ToListAsync();
-    // }
-
     public async Task<PagedResult<List<ProductDTO>>> GetAllExistingProductsAsync(
         string sortOrder,
         string? sortColumn,
@@ -44,7 +36,15 @@ public class ProductQueryService(AppDbContext context) : IProductQueryService
 
         var result = await query
             .Include(p => p.Categories)
-            .Select(p => new ProductDTO(p.Name, p.Description, p.Price, p.Stock))
+            .Select(p => new ProductDTO(
+                p.Id, 
+                p.Name, 
+                p.Description, 
+                p.Price, 
+                p.Stock,
+                p.Categories.Select(c => new CategoryDTO(
+                    c.Id, 
+                    c.Name)).ToList()))
             .ToListAsync(cancellationToken);
 
         return PagedResult<List<ProductDTO>>.Create(result, pageSize, pageNumber, result.Count());
@@ -55,7 +55,16 @@ public class ProductQueryService(AppDbContext context) : IProductQueryService
         return await context.Products
             .AsNoTracking()
             .Where(p => p.Id == id && !p.IsDeleted)
-            .Select(p => new ProductDTO(p.Name, p.Description, p.Price, p.Stock))
+            .Include(p => p.Categories)
+            .Select(p => new ProductDTO(
+                p.Id, 
+                p.Name, 
+                p.Description, 
+                p.Price, 
+                p.Stock,
+                p.Categories.Select(c => new CategoryDTO(
+                    c.Id, 
+                    c.Name)).ToList()))
             .FirstOrDefaultAsync(cancellationToken);
     }
 }
